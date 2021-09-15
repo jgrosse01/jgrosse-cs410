@@ -1,33 +1,52 @@
 package orange;
 
-public class PlantSU implements Runnable {
+public class PlantMulti implements Runnable {
     // How long do we want to run the juice processing
     public static final long PROCESSING_TIME = 5 * 1000;
 
+    private static final int NUM_PLANTS = 2;
+
     public static void main(String[] args) {
-        // Startup a single plant
-        final PlantSU p = new PlantSU(0);
-        
-        p.startPlant();
+        // Startup the plants
+        PlantMulti[] plants = new PlantMulti[NUM_PLANTS];
+        for (int i = 0; i < NUM_PLANTS; i++) {
+            plants[i] = new PlantMulti(i);
+            plants[i].startPlant();
+        }
 
         // Give the plants time to do work
-        delay();
+        delay(PROCESSING_TIME, "Plant malfunction");
 
-        // Stop the plant, and wait for it to shut down
-        p.stopPlant();
+        // Stop the plant, and wait for it to shutdown
+        for (PlantMulti p : plants) {
+            p.stopPlant();
+        }
+        for (PlantMulti p : plants) {
+            p.waitToStop();
+        }
 
         // Summarize the results
-        System.out.println("Total provided/processed = " + p.getProvidedOranges() + "/" + p.getProcessedOranges());
-        System.out.println("Created " + p.getBottles() +
-                ", wasted " + p.getWaste() + " oranges");
+        int totalProvided = 0;
+        int totalProcessed = 0;
+        int totalBottles = 0;
+        int totalWasted = 0;
+        for (PlantMulti p : plants) {
+            totalProvided += p.getProvidedOranges();
+            totalProcessed += p.getProcessedOranges();
+            totalBottles += p.getBottles();
+            totalWasted += p.getWaste();
+        }
+        System.out.println("Total provided/processed = " + totalProvided + "/" + totalProcessed);
+        System.out.println("Created " + totalBottles +
+                           ", wasted " + totalWasted + " oranges");
     }
 
-    private static void delay() {
-        long sleepTime = Math.max(1, PlantSU.PROCESSING_TIME);
+    private static void delay(long time, String errMsg) {
+        long sleepTime = Math.max(1, time);
         try {
             Thread.sleep(sleepTime);
         } catch (InterruptedException e) {
-            System.err.println("Plant malfunction");
+            System.err.println(errMsg);
         }
     }
 
@@ -38,7 +57,7 @@ public class PlantSU implements Runnable {
     private int orangesProcessed;
     private volatile boolean timeToWork;
 
-    PlantSU(int threadNum) {
+    PlantMulti(int threadNum) {
         orangesProvided = 0;
         orangesProcessed = 0;
         thread = new Thread(this, "Plant[" + threadNum + "]");
@@ -51,6 +70,9 @@ public class PlantSU implements Runnable {
 
     public void stopPlant() {
         timeToWork = false;
+    }
+
+    public void waitToStop() {
         try {
             thread.join();
         } catch (InterruptedException e) {
@@ -65,7 +87,7 @@ public class PlantSU implements Runnable {
             orangesProvided++;
             System.out.print(".");
         }
-        System.out.println();
+        System.out.println("");
         System.out.println(Thread.currentThread().getName() + " Done");
     }
 
