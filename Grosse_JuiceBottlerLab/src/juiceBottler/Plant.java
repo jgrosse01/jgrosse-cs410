@@ -28,14 +28,17 @@ public class Plant implements Runnable {
 	}
 
 	public void startPlant() {
+		timeToWork = true;
 		for (Worker w : workers) {
 			w.startWorker();
 		}
-		timeToWork = true;
 		thread.start();
 	}
 
 	public void stopPlant() {
+		for (Worker w : workers) {
+			w.stopWorker();
+		}
 		timeToWork = false;
 	}
 
@@ -46,18 +49,20 @@ public class Plant implements Runnable {
 			System.err.println(thread.getName() + " plant stop malfunction");
 		}
 	}
-
+	
 	@Override
 	public void run() {
+		System.out.println(this.getThreadName() + " processing oranges");
+		
 		while (timeToWork) {
 			continue;
 		}
-		for (Worker w : workers) {
-			w.stopWorker();
-		}
+		
 		for (Worker w : workers) {
 			w.waitToStop();
 		}
+		
+		System.out.println(this.getThreadName() + " is Finished");
 	}
 
 	public synchronized void fetchOrange() {
@@ -67,6 +72,7 @@ public class Plant implements Runnable {
 	public synchronized Orange requestOrange() {
 		if (oranges.isEmpty()) {
 			fetchOrange();
+			orangeProvided();
 		}
 		return oranges.remove();
 	}
