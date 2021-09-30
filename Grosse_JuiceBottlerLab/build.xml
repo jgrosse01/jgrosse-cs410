@@ -3,27 +3,32 @@
   <property name="src" location="src"/>
   <property name="dist" location="dist"/>
 
+  <!--Initializes Output Directory-->
   <target name="init">
     <mkdir dir="${dist}"/>
     <mkdir dir="${dist}/classes"/>
   </target>
 
+  <!--Where we compile jars.-->
   <target name="compile" depends="init">
     <javac includeantruntime="false" srcdir="${src}" destdir="${dist}/classes"/>
   </target>
 
+  <!--compiles jar itself and places in the folder selected-->
   <target name="jar" depends="init,compile">
-    <jar destfile="${dist}/Grosse_Lab1.jar" basedir="${dist}/classes">
+    <jar destfile="${dist}/Grosse_JuiceBottlerLab.jar" basedir="${dist}/classes">
       <manifest>
-        <attribute name="Main-Class" value="/juiceBottler/PlantManager"/>
+        <attribute name="Main-Class" value="juiceBottler/PlantManager"/>
       </manifest>
     </jar>
   </target>
 
+  <!--runs the jar on a fork-->
   <target name="run" depends="jar">
-    <java jar="${dist}/Grosse_Lab1.jar" fork="true"/>
+    <java jar="${dist}/Grosse_JuiceBottlerLab.jar" fork="true"/>
   </target>
 
+  <!--creates a clean command which empties dist folder-->
   <target name="clean">
     <delete dir="${dist}"/>
   </target>

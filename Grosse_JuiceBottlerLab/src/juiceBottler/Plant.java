@@ -67,12 +67,12 @@ public class Plant implements Runnable {
 
 	public synchronized void fetchOrange() {
 		oranges.add(new Orange());
+		orangeProvided();
 	}
-
+	
 	public synchronized Orange requestOrange() {
 		if (oranges.isEmpty()) {
 			fetchOrange();
-			orangeProvided();
 		}
 		return oranges.remove();
 	}
@@ -112,6 +112,6 @@ public class Plant implements Runnable {
 	}
 
 	public String getThreadName() {
-		return thread.getName();
+		return this.thread.getName();
 	}
 }
