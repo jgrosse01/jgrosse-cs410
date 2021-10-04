@@ -1,7 +1,7 @@
 package juiceBottler;
 
 import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.LinkedList;
 
 /**
  * @desc The unethical bodies themselves. A juicing plant which utilizes slave
@@ -35,7 +35,7 @@ public class Plant implements Runnable {
 
 		// LinkedBlockingQueue for some added efficiency over a list or Array based
 		// implementation
-		oranges = new LinkedBlockingQueue<Orange>();
+		oranges = new LinkedList<Orange>();
 		
 		// init workers in array
 		workers = new Worker[WORKERS_PER_PLANT];
